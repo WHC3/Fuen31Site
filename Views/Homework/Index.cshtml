@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+<h1>Index</h1>
+
+<div class="aaa"></div>
+
+@section Scripts {
+    <script src="~/js/travel.js"></script>
+
+    <script>
+        let theDiv = document.querySelector(".aaa")    //空容器
+        let emps = spots.CommonFormat.Section;   //資料
+        let a = "";      //有的沒圖片 ,所以先預設是空字串
+        let htmlEmps = emps.map((emp) => {
+            let { stitle, xbody, file } = emp;  //解構,把資料拆開,顯示對應的欄位資料
+            try {
+                a = file.img[0].text   //找到圖片
+            } catch {
+                a = ""   //沒有圖片,就是空字串
+            }
+            return (
+                `<div class="row row-cols-1 row-cols-md-3 g-4">
+                            <div class="col">
+                                <div class="card">
+                                      <img src="${a}" class="card-img-top">
+                                    <div class="card-body">
+                                                <h5 class="card-title">${stitle}</h5>
+                                                <p class="card-text">${xbody}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`
+            )
+        })
+
+        theDiv.innerHTML = htmlEmps.join("");
+    </script>
+
+}

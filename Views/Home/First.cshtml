@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewData["Title"] = "First";
+}
+
+<h1>First</h1>
+
+<button id="button1" class="btn btn-primary mb-3">Ajax開始</button>
+<button id="button2" class="btn btn-primary mb-3">Ajax停止</button>
+<img src="~/images/Circles.gif" id="img1" style="display:none" />
+<div id="div1" class="alert alert-info"></div>
+
+@section Scripts{
+    <script>
+        const btn = document.querySelector('#button1');
+        const btnStop = document.querySelector('#button2');
+        const theDiv = document.querySelector('#div1');
+        const imgLoader = document.querySelector('#img1');
+        let abortController;
+
+        btnStop.addEventListener('click', () => {
+            if (abortController) {
+                abortController.abort();
+            }
+        })
+
+        btn.addEventListener('click',async ()=> {
+            try {
+                
+                //顯示執行中的圖示
+                imgLoader.style.display = "inline";
+                //停用按鈕
+                btn.setAttribute('disabled', 'disabled');
+
+                //建立AbortController物件
+                abortController = new AbortController();
+                const signal = abortController.signal;
+
+                // setTimeout(() => {
+                //     abortController.abort();
+                // }, 5000);
+
+                //Ajax
+                const response = await fetch('@Url.Content("~/api/index")', {signal});
+               // const response = await fetch('@Url.Content("~/api/index")');
+                //not false
+                if (!response.ok) {
+                    throw new Error(response.status);
+                }
+                const data = await response.text();
+                theDiv.innerHTML = `<h2>${data}</h2>`;
+            } catch (err) {
+                theDiv.innerHTML = `<h2>${err}</h2>`;
+            } finally {
+                //隱藏執行中的圖示
+                imgLoader.style.display = "none";
+                //啟用按鈕
+                btn.removeAttribute('disabled');
+            }
+          
+
+
+
+
+
+
+
+
+           // console.log(fetch('/api/index'));
+           //promise resolve() reject
+            // fetch('/api/index') 
+            //     .then(response => {
+            //         // console.log(response);
+            //         // console.log(response.text()); //promise
+            //         return response.text();
+            //     })
+            //     .then(data => {
+            //         //console.log(data);
+            //         theDiv.innerHTML = `<h2>${data}</h2>`;
+            //     })
+            //~ 指向專案根目錄
+            //fetch('~/api/index') 不能使用 ~
+
+
+
+            // fetch('@Url.Content("~/api/index")')
+            //     .then(response => {
+            //         //取出headers資料
+            //         response.headers.forEach((value, name) => {
+            //             console.log(`${name}:${value}`);
+            //         })
+            //         console.log(`ok:${response.ok}`);
+            //         console.log(`status:${response.status}`);
+            //         return response.text();
+            //     })
+            //     .then(data => {
+            //         //讀出資料，顯示資料
+            //         //console.log(data);
+            //         theDiv.innerHTML = `<h2>${data}</h2>`;
+            //     })
+
+            //theDiv.innerHTML = "<h2>Ajax...</h2>";
+        })
+    </script>
+}

@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewData["Title"] = "CheckAccount";
+}
+
+<h1>CheckAccount</h1>
+
+<div>
+    <label>姓名:</label>
+    <input type="text" id="input1" />
+</div>
+<div class="alert alert-info" id="div1"></div>
+<div>
+    <label>電子郵件:</label>
+    <input type="text" />
+</div>
+<div>
+    <label>年紀:</label>
+    <input type="text" />
+</div>
+
+
+@section Scripts {
+    <script>
+        const theDiv = document.querySelector("#div1");
+        const input1 = document.querySelector("#input1");
+
+
+        input1.addEventListener("focusout", async () => {
+            const ac = input1.value;
+            const response = await fetch(`@Url.Content("~/api/CheckAccount")?name=${ac}`); //抓來自fetch()資料
+
+            const account = await response.text(); //接資料
+
+            // const put = account.map((acc) => {
+            //     return acc
+            // });
+            console.log(account);
+            theDiv.innerHTML = `${account}`;
+
+        });
+
+    </script>
+}
