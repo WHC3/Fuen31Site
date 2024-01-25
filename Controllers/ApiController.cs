@@ -281,7 +281,7 @@ namespace Fuen31Site.Controllers
         }
 
 
-        // 產生鹽
+        // 產生鹽 //
         private static byte[] GenerateRandomSalt()
         {
             byte[] salt = new byte[16]; // 16位元組的加鹽
