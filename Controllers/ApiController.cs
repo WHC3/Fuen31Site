@@ -227,6 +227,13 @@ namespace Fuen31Site.Controllers
         [HttpPost]
         public IActionResult Homework3(Member member, IFormFile Avatar) //作業3
         {
+            Member? memb = _dbContext.Members.Where(x => x.Name == member.Name).FirstOrDefault();
+            if (memb != null)
+            {
+                return Content($"{member.Name}已經註冊過了");
+            }
+
+
             string fileName = "empty.jpg";
             if (Avatar != null)
             {

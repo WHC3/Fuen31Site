@@ -12,6 +12,7 @@
             <div class="mb-3">
                 <label for="userName" class="form-label">姓名：</label>
                 <input type="text" class="form-control" id="userName" name="Name">   @*寫 name="Name",裡面的name="xxx",xxx要和自己設的class DTO或是 class Member 的表格欄位名稱一樣 方便抓資料 *@
+                <div class="alert alert-info mt-3" id="div3"></div>
             </div>
             <div class="mb-3">
                 <label for="UserEmail" class="form-label">電子郵件：</label>
@@ -49,12 +50,28 @@
         const btn = document.querySelector("#button1");
         const theDiv = document.querySelector("#div1");
         const theForm = document.querySelector("#userForm");
+        const userName = document.querySelector("#userName");
 
         const theDiv2 = document.querySelector("#div2");
+        const theDiv3 = document.querySelector("#div3");
         const password = document.querySelector("#UserPassword");
         const confirmpassword = document.querySelector("#UserSalt");
 
 
+        userName.addEventListener("focusout", async () => {
+            const ac = userName.value;
+            console.log(ac);
+            const response = await fetch(`@Url.Content("~/api/CheckAccount")?name=${ac}`); //抓來自fetch()資料
+
+            const account = await response.text(); //接資料
+
+            // const put = account.map((acc) => {
+            //     return acc
+            // });
+            console.log(account);
+            theDiv3.innerHTML = `${account}`;
+
+        });
 
 
         //方法--(2)  用FormData 物件讀取表單中使用者輸入的資料
@@ -74,14 +91,8 @@
             });
             const data = await response.text();
             theDiv.innerHTML = data;
+            // theDiv3.innerHTML = data;
 
-
-            //// __ 試跑console.log()看看
-            // formData.append("city", "中壢");    ////新增資料進入formData
-            // for (const pair of formData.entries()) {   ///讀取formData所有資料
-            //     console.log(pair[0]);
-            //     console.log(pair[1]);
-            // }
 
         });
 
