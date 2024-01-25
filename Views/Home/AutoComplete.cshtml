@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "AutoComplete";
+}
+
+<h1>AutoComplete</h1>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6">
+
+        <input type="text" class="form-control mb-3" id="autocomplete">
+        <div class="list-group"></div>
+
+    </div>
+    <div class="col-3"></div>
+</div>
+
+@section Scripts {
+    <script>
+
+        const inputText = document.querySelector('#autocomplete');
+        const divTitle = document.querySelector('.list-group');
+
+
+        inputText.addEventListener('input', async (event) => {
+            const keyword = event.target.value.trim(); //event.target.value指的是inputText, trim()去除空白
+            if (keyword.length > 0) {
+                console.log(keyword); //查看顯示輸入的關鍵字
+                
+                //ajax
+                const url = `@Url.Content("~/api/spotstitle")?keyword=${keyword}`; //api/spotstitle?keyword=${keyword}
+                const response = await fetch(url);
+                const datas = await response.json(); //收到最多8筆spotsTitle的資料
+
+                //讀出資料、顯示資料
+                const btnTitles = datas.map((title) => { 
+                   return `<button type="button" onclick="clickHandler('${title}')" class="list-group-item list-group-item-action">${title}</button>` 
+                });
+
+                divTitle.innerHTML = btnTitles.join(""); //加入
+
+            }
+        })
+        const clickHandler = (title) => {
+            inputText.value = title;
+        }
+    </script>
+}

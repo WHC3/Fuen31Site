@@ -2,80 +2,123 @@
     ViewData["Title"] = "Spots";
 }
 
+@section Styles {   @*css樣式 ,在_Layout要設置*@
+    <style>
+        .currentPage {
+            background-color: lightgreen !important
+        }
+    </style>
+
+}
+
 <h1>Spots</h1>
 <div class="row mb-3">
     <div class="col-3"></div>
-    <div class="col-6"></div>
-    <div class="col-3">
+    <div class="col-6 mb-4">    
+        <nav aria-label="Page navigation example">
+            @*這裡是分頁按鈕的位置*@
+            <ul class="pagination">
+                
+                
+            </ul>
+        </nav>
+    </div>
+    <div class="col-8 mt-4">
         <input type="search" id="inputKeyword" class="form-control" placeholder="景點搜尋" />
     </div>
 </div>
-<div class="row row-cols-1 row-cols-md-3 g-4" id="spots">
+<div class="row row-cols-1 row-cols-md-3 g-4" id="spots"></div>
 
-    @section Scripts {
-        <script>
+@section Scripts {
+    <script>
 
-            const searchData =
-            {
-                "categoryId": 0,
-                "keyword": "北投",
-                "page": 2,
-                "pageSize": 9,
-                "sortType": "asc",
-                "sortBy": ""
-            };
+        const searchData =
+        {
+            "categoryId": 0,
+            "keyword": "北投",
+            "page": 1,
+            "pageSize": 9,
+            "sortType": "asc",
+            "sortBy": ""
+        };
 
-            const divSpots = document.querySelector('#spots');
-            const inpKeyword = document.querySelector('#inputKeyword');
+        const divSpots = document.querySelector('#spots');
+        const inpKeyword = document.querySelector('#inputKeyword');
+        const ulPaging = document.querySelector('.pagination');
 
-            //根據searchData的條件，讀取景點資料
-            const loadSpots = async () => {
-                const response = await fetch('@Url.Content("~/api/spots")', {
-                    method: 'POST',
-                    body: JSON.stringify(searchData),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const datas = await response.json();
-                // console.log(datas);
-                const cardSpots = datas.spotsReslut.map(spot => {
-                    const { spotId, spotTitle, spotDescription, spotImage, address } = spot;
-                    return (
-                        `
-                         <div class="col">
-                           <div class="card h-100">
-                                <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
-                               <div class="card-body">
-                                 <h5 class="card-title">${spotId} - ${spotTitle}</h5>
-                                    <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}...</p>
-                               </div>
-                              <div class="card-footer">
-                                <small class="text-body-secondary">${address}</small>
-                              </div>
-                           </div>
-                         </div>
-                         `
-                    )
-                });
 
-                divSpots.innerHTML = cardSpots.join("");
-            }
-
-            inpKeyword.addEventListener('keydown', event => {
-                if (event.which === 13) {
-                    searchData.keyword = event.target.value;
-                    console.log(event.target.value)
-                    searchData.page = 1;
-                    loadSpots();
+        //根據searchData的條件，讀取景點資料
+        const loadSpots = async () => {
+        const response = await fetch('@Url.Content("~/api/spots")', {
+                method: 'POST',
+                body: JSON.stringify(searchData),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            })
+            });
+        const datas = await response.json();
+
+        console.log(datas);
+
+        //產生分頁按鈕
+        let liPaging = "";
+        for (let i = 1, max = datas.totalPages; i <= max; i++) {
+         if (i === searchData.page) { //當前頁
+             liPaging += `<li class="page-item" onclick="pagingHandler(${i})"><a class="page-link currentPage" href="#">${i}</a></li>`; //多了 currentPage
+         }
+         else {
+             liPaging += `<li class="page-item" onclick="pagingHandler(${i})"><a class="page-link" href="#">${i}</a></li>`;
+         }
+
+        }
+            ulPaging.innerHTML = liPaging; //在ulPaging的位置 加入產的分頁按鈕
 
 
-            //載入景點
+        const cardSpots = datas.spotsReslut.map((spot) => {
+        const { spotId, spotTitle, spotDescription, spotImage, address } = spot;
+        return (
+                    `
+           <div class="col">
+             <div class="card h-100">
+                <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
+               <div class="card-body">
+                 <h5 class="card-title">${spotId} - ${spotTitle}</h5>
+                   <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}...</p>
+               </div>
+               <div class="card-footer">
+                 <small class="text-body-secondary">${address}</small>
+               </div>
+             </div>
+           </div>
+          `
+                )
+            });
+
+            divSpots.innerHTML = cardSpots.join("");
+        }
+
+        //按下enter按鈕時觸發 搜尋
+        inpKeyword.addEventListener('keydown', event => {  //按下enter按鈕時觸發,
+            if (event.which === 13) {  //案enter會有顯示值 = 13
+                searchData.keyword = event.target.value; // vent.target.value指的是 inpKeyword
+                console.log(event.target.value)
+                searchData.page = 1;
+                loadSpots();  //重新載入一次
+            }
+        })
+
+        //分頁
+        const pagingHandler = (page) => {
+            searchData.page = page;
             loadSpots();
+        }
 
 
-        </script>
-    }
+        //載入景點
+        loadSpots();
+
+
+    </script>
+
+}
 

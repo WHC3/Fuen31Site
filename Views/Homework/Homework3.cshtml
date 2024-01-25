@@ -1,20 +1,28 @@
 ﻿
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Homework3";
 }
 
-<h1>Register</h1>
+<h1>Homework3 Register</h1>
+
 <div class="row">
     <div class="col-3"></div>
     <div class="col-6">
         <form id="userForm">
             <div class="mb-3">
                 <label for="userName" class="form-label">姓名：</label>
-                <input type="text" class="form-control" id="userName" name="Name">   @*寫 name="Name",要和class與表格欄位名稱一樣 方便抓資料 *@
+                <input type="text" class="form-control" id="userName" name="Name">   @*寫 name="Name",裡面的name="xxx",xxx要和自己設的class DTO或是 class Member 的表格欄位名稱一樣 方便抓資料 *@
             </div>
             <div class="mb-3">
                 <label for="UserEmail" class="form-label">電子郵件：</label>
                 <input type="email" class="form-control" id="UserEmail" name="Email">  @*寫 name="Email" 方便抓資料 *@
+            </div><div class="mb-3">
+                <label for="UserPassword" class="form-label">密碼：</label>
+                <input type="password" class="form-control" id="UserPassword" name="Password">  @*寫 name="Password" 方便抓資料 *@
+            </div><div class="mb-3">
+                <label for="UserSalt" class="form-label">確認密碼：</label>
+                <input type="password" class="form-control" id="UserSalt" name="Salt">  @*寫 name="Salt" 方便抓資料 *@
+                <div id="div2"></div>  @*顯示文字*@
             </div>
             <div class="mb-3">
                 <label for="userAge" class="form-label">年紀：</label>
@@ -27,21 +35,24 @@
 
             <button id="button1" type="submit" class="btn btn-primary">送出</button>
         </form>
-        <div class="alert alert-info mt-3" id="div1"></div>  @*顯示內容文字*@
+
+        <div class="alert alert-info mt-3" id="div1"></div>
     </div>
     <div class="col-3">
     </div>
 </div>
 
-@section Scripts {
+
+@section Scripts{
     <script>
 
         const btn = document.querySelector("#button1");
-        const textName = document.querySelector("#UserName");   //以下有用formData一次抓全部的值,就不用一筆一筆抓值
-        const textEmail = document.querySelector("#UserEmail");  //以下有用formData一次抓全部的值,就不用一筆一筆抓值
-        const textAge = document.querySelector("#UserAge");    //以下有用formData一次抓全部的值,就不用一筆一筆抓值
-        const theDive = document.querySelector("#div1");
+        const theDiv = document.querySelector("#div1");
         const theForm = document.querySelector("#userForm");
+
+        const theDiv2 = document.querySelector("#div2");
+        const password = document.querySelector("#UserPassword");
+        const confirmpassword = document.querySelector("#UserSalt");
 
 
 
@@ -54,16 +65,18 @@
             const formData = new FormData(theForm);
 
             //將formData資料傳送到Server端 ,可以在view上顯示 __步驟(2)
-            const Url = `@Url.Content("~/api/Register")`;
+            const Url = `@Url.Content("~/api/Homework3")`;
             const response = await fetch(Url, {
                 method: "POST",  //新增method:POST ,不會是按鈕submit
                 body: formData   //method是 POST 時，會有body,可以是FormData、json..
+
+                
             });
             const data = await response.text();
-            theDive.innerHTML = data;
+            theDiv.innerHTML = data;
 
 
-            ////__ 試跑console.log()看看
+            //// __ 試跑console.log()看看
             // formData.append("city", "中壢");    ////新增資料進入formData
             // for (const pair of formData.entries()) {   ///讀取formData所有資料
             //     console.log(pair[0]);
@@ -71,40 +84,6 @@
             // }
 
         });
-
-
-
-
-
-        ////方法 --(1) 每筆抓值 傳出傳入讀取的方法 ,接收者用DTO傳入
-        // btn.addEventListener("click", async (event) => {
-        //     event.preventDefault();  //防止submit送出的功能
-
-        //     const Url = `@Url.Content("~/api/Register")?name=${textName.value}&age=${textAge.value}&email=${textEmail.value}`;
-
-        //     const response = await fetch(Url);
-        //     const data = await response.text();
-
-        //     theDive.innerHTML = data;
-
-        // });
-
-
-
-
-
-
-        ////Ajax 傳入、接收的方法的範例  重要!!!
-        // (async () => {
-        //     //把資料傳入別的地方
-        //const Url = '@Url.Content("~/api/Register")?name=Tom&age=20&email=jim309@gmail.com'; //把資料傳入別的地方--帶多個參數--傳入的地方可改成接收DTO--(方法三)
-        //const Url = '@Url.Content("~/api/Register")?name=Tom&age=20';  //把資料傳入別的地方--帶參數--(方法二)
-        //const Url = '@Url.Content("~/api/Register")'; //把資料傳入別的地方--不帶參數--(方法一)
-
-        //const response = await fetch(Url)
-        //const data = await response.text();
-        //console.log(data);
-        // })();
 
 
     </script>
